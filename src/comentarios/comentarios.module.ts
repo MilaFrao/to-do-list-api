@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ComentariosController } from './comentarios.controller';
 import { ComentariosService } from './comentarios.service';
-import { ComentariosController } from './comentarios.controller';
+
 
 @Module({
   controllers: [ComentariosController],
