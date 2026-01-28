@@ -2,8 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { Module, ValidationPipe } from '@nestjs/common';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { TareasModule } from './tareas/tareas.module';
 import { DbModule } from './db/db.module';
+import { CategoriasModule } from './categorias/categorias.module';
 import 'dotenv/config';
+import { ComentariosModule } from './comentarios/comentarios.module';
 
 @Module({
   imports:[
@@ -12,6 +15,9 @@ import 'dotenv/config';
     }),
     DbModule,
     UsuariosModule,
+    TareasModule,
+    CategoriasModule,
+    ComentariosModule
   ],
 })
 export class AppModule{}
