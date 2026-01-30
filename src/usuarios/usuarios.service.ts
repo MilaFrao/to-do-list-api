@@ -21,4 +21,15 @@ export class UsuariosService {
         ]);
     };
 
+    async update(id:number, dto: CrearUsuarioDTO){
+        const sql = 'UPDATE usuarios SET nombre = $1, email = $2, contrasena = $3 WHERE id = $4 RETURNING *';
+
+        return this.db.query(sql,[
+            dto.nombre,
+            dto.email,
+            dto.contrasena,
+            id
+        ]);
+    }
+
 }
