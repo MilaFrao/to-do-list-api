@@ -1,6 +1,7 @@
-import { Controller, Body, Get, Post } from '@nestjs/common';
+import { Controller, Body, Get, Post, Delete, Param, ParseIntPipe, Patch } from '@nestjs/common';
 import { TareasService } from './tareas.service';
 import { CrearTareaDTO } from './DTO/crear-tareas.dto';
+import { ActualizarTareaDTO } from './DTO/actualizar-tareas.dto';
 
 @Controller('tareas')
 export class TareasController {
@@ -16,6 +17,14 @@ export class TareasController {
         return this.tareaService.create(dto);
     }
 
-    
+    @Patch(':id')
+    updateTareas(@Param('id') id:number, @Body()dto: ActualizarTareaDTO){
+        return this.tareaService.update(id,dto);
+    }
+
+    @Delete(':id')
+    deleteTareas(@Param('id', ParseIntPipe) id:number){
+        return this.tareaService.delete(id);
+    }    
 
 }

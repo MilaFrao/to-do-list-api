@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CrearUsuarioDTO } from './DTO/crear-usuarios.dto';
 import { DbService } from 'src/db/db.service';
+import { NotFoundError } from 'rxjs';
+import { error } from 'console';
 
 @Injectable()
 export class UsuariosService {
@@ -32,4 +34,22 @@ export class UsuariosService {
         ]);
     }
 
+    async delete(id:number){
+        try{
+            const sql = 'DELETE FROM usuarios WHERE id = $1 RETURNING id';
+            const result = await this.db.query(sql,[id]);
+
+            if(result.length === 0 ){
+                throw new NotFoundException("Usuario no encontrado");
+            }
+            return{
+                message: 'Usuario eliminado correctamente', id: result[0].id,
+            };
+        }catch (error:any){
+            if(error.code === '23503'){
+                throw new ConflictException('No se puede eliminar el usuario porque tiene registros asociados', );
+            }
+            throw error;
+        }
+    }
 }

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { CrearTareaDTO } from './DTO/crear-tareas.dto';
 import { DbService } from 'src/db/db.service';
 import { ActualizarTareaDTO } from './DTO/actualizar-tareas.dto';
@@ -78,8 +78,24 @@ export class TareasService {
 
   }
 
-  async delete(){
-    // Falta implementar
+  async delete(id: number){
+    try{
+      const sql = 'DELETE FROM tareas WHERE id = $1 RETURNING id';
+      const result = await this.db.query(sql,[id]);
+
+      if(result.length === 0){
+        throw new NotFoundException("Tarea no encontrada");
+      }
+      return{
+        message: 'Tarea eliminada correctamente', id: result[0].id,
+      };
+    }
+    catch(error:any){
+      if (error.code === '23503'){
+        throw new ConflictException('No se puede eliminar la tarea porque tiene registros asociados', );
+      }
+      throw error;
+    }
   }
 
 }
