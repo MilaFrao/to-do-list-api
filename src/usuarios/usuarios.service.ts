@@ -9,14 +9,15 @@ export class UsuariosService {
     constructor(private readonly db:DbService){}
 
     async findAll(){
-        const sql = 'SELECT id, nombre, email, contrasena, fecha_de_registro FROM usuarios';
+        const sql = 'SELECT id, nombre, email, contrasena, fecha_registro FROM usuarios';
         return this.db.query(sql);
     }
 
     async create(dto: CrearUsuarioDTO){
-        const sql = 'INSERT INTO usuarios (nombre, email, contrasena) VALUES ($1, $2, $3) RETURNING id, nombre, email';
+        const sql = 'INSERT INTO usuarios (id, nombre, email, contrasena) VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, contrasena';
 
         return this.db.query(sql, [
+        dto.id,
         dto.nombre,
         dto.email,
         dto.contrasena,

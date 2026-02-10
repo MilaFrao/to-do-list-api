@@ -1,6 +1,14 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsEmail, IsInt, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { Type } from "class-transformer";
 
 export class CrearUsuarioDTO {
+
+    @IsNotEmpty()
+    @IsInt()
+    @Type(()=> Number)
+    id?: number;
+
+
     @IsNotEmpty()
     @IsString()
     @MaxLength(150)
