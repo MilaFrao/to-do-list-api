@@ -5,10 +5,10 @@ import { ComentariosModule } from './comentarios/comentarios.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { DbModule } from './db/db.module';
 import { ConfigModule } from '@nestjs/config';
-// import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-    imports: [UsuariosModule, TareasModule, ComentariosModule, CategoriasModule, DbModule, ConfigModule.forRoot({isGlobal:true}), /*AuthModule*/],
+    imports: [UsuariosModule, TareasModule, ComentariosModule, CategoriasModule, DbModule, ConfigModule.forRoot({isGlobal:true}), AuthModule],
     controllers: [],
     providers: [],
 })

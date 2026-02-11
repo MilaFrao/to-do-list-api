@@ -13,9 +13,10 @@ export class CategoriasService {
     }
 
     async create(dto: CrearCategoriaDTO){
-        const sql = 'INSERT INTO comentarios (nombre, descripcion, color) VALUES ($1, $2, $3) RETURNING id, nombre, descripcion, color';
+        const sql = 'INSERT INTO categorias (id, nombre, descripcion, color) VALUES ($1, $2, $3, $4) RETURNING id, nombre, descripcion, color';
 
         return this.db.query(sql,[
+            dto.id,
             dto.nombre,
             dto.descripcion,
             dto.color

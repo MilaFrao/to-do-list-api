@@ -23,5 +23,5 @@ export class CrearUsuarioDTO {
     @IsNotEmpty()
     @IsString()
     @MaxLength(250)
-    contrasena?: string;
+    contrasena!: string;
 }

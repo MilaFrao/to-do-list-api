@@ -5,9 +5,14 @@ import { Type } from 'class-transformer';
 export class CrearTareaDTO {
 
   @IsNotEmpty()
+  @IsInt()
+  @Type(() => Number)
+  id?: number;
+
+  @IsNotEmpty()
   @IsString()
   @MaxLength(150)
-  titulo: string;
+  titulo?: string;
 
   @IsOptional()
   @IsString()
@@ -21,20 +26,11 @@ export class CrearTareaDTO {
 
   @IsOptional()
   @IsDateString()
-  fecha_entrega?: string; // ISO string 'YYYY-MM-DD' o 'YYYY-MM-DDTHH:MM:SSZ'
+  fecha_entrega?: string; 
 
   @Type(() => Number)
   @IsNotEmpty()
   @IsInt()
-  id_creador: number;
+  id_creador?: number;
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  id_asignado?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  id_categorias?: number;
 }

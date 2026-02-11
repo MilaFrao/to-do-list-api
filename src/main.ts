@@ -7,6 +7,7 @@ import { DbModule } from './db/db.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import 'dotenv/config';
 import { ComentariosModule } from './comentarios/comentarios.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports:[
@@ -17,7 +18,8 @@ import { ComentariosModule } from './comentarios/comentarios.module';
     UsuariosModule,
     TareasModule,
     CategoriasModule,
-    ComentariosModule
+    ComentariosModule,
+    AuthModule
   ],
 })
 export class AppModule{}

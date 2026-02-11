@@ -3,6 +3,7 @@ import { CrearUsuarioDTO } from './DTO/crear-usuarios.dto';
 import { DbService } from 'src/db/db.service';
 import { NotFoundError } from 'rxjs';
 import { error } from 'console';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
@@ -14,23 +15,30 @@ export class UsuariosService {
     }
 
     async create(dto: CrearUsuarioDTO){
-        const sql = 'INSERT INTO usuarios (id, nombre, email, contrasena) VALUES ($1, $2, $3, $4) RETURNING id, nombre, email, contrasena';
+
+        const hashedPassword = await bcrypt.hash(dto.contrasena, 10);
+        const sql = 'INSERT INTO usuarios (id, nombre, email, contrasena, fecha_registro) VALUES ($1, $2, $3, $4, NOW()) RETURNING id, nombre, email, fecha_registro';
 
         return this.db.query(sql, [
         dto.id,
         dto.nombre,
         dto.email,
-        dto.contrasena,
+        hashedPassword,
         ]);
     };
 
     async update(id:number, dto: CrearUsuarioDTO){
+
+        let hashedPassword = dto.contrasena;
+        if(dto.contrasena){
+            hashedPassword = await bcrypt.hash(dto.contrasena, 10);
+        }
         const sql = 'UPDATE usuarios SET nombre = $1, email = $2, contrasena = $3 WHERE id = $4 RETURNING *';
 
         return this.db.query(sql,[
             dto.nombre,
             dto.email,
-            dto.contrasena,
+            hashedPassword,
             id
         ]);
     }

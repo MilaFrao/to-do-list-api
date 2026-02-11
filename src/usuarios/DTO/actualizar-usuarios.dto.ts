@@ -15,5 +15,5 @@ export class ActualizarUsuarioDTO {
     @IsNotEmpty()
     @IsString()
     @MaxLength(250)
-    contrasena?: string;
+    contrasena!: string;
 }

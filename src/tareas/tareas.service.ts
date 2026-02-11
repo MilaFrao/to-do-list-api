@@ -9,8 +9,7 @@ export class TareasService {
 
   async findAll() {
     const sql = `
-      SELECT id, titulo, descripcion, story_points, fecha_entrega, estado, id_creador, id_asignado, id_categorias, fecha_creacion
-      FROM tareas`;
+      SELECT id, titulo, descripcion, story_points, fecha_entrega, estado, id_creador, fecha_creacion FROM tareas`;
     try {
       const rows = await this.db.query(sql);
       return rows; // db.query devuelve array de rows
@@ -23,26 +22,24 @@ export class TareasService {
   async create(dto: CrearTareaDTO) {
     const sql = `
       INSERT INTO tareas (
+        id,
         titulo,
         descripcion,
         story_points,
         fecha_entrega,
         id_creador,
-        id_asignado,
-        id_categorias
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `;
 
     const values = [
+      dto.id,
       dto.titulo,
       dto.descripcion ?? null,
       dto.story_points ?? null,
       dto.fecha_entrega ?? null,
       dto.id_creador,
-      dto.id_asignado ?? null,
-      dto.id_categorias ?? null,
     ];
 
     try {

@@ -19,9 +19,11 @@ export class ComentariosService {
     }
 
     async create(dto: CrearComentarioDTO){
-        const sql = 'INSERT INTO comentarios (contenido, id_usuario, id_tarea) VALUES ($1, $2, $3) RETURNING *';
+        const sql = 'INSERT INTO comentarios (id,contenido, fecha_comentario, id_usuario, id_tarea) VALUES ($1, $2, $3, $4, $5) RETURNING *';
 
         return this.db.query(sql, [
+            dto.id,
+            dto.fecha_creacion,
             dto.contenido,
             dto.id_usuario,
             dto.id_tarea
@@ -43,8 +45,9 @@ export class ComentariosService {
 
     }
 
-    async delete(){
-        // Falta implementar
+    async delete(id: number){
+        const sql = 'DELETE FROM comentarios WHERE id = $1 RETURNING *';
+        return this.db.query(sql, [id]);
     }
 
 }
