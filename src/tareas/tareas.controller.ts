@@ -12,6 +12,12 @@ export class TareasController {
         return this.tareaService.findAll();
     }
 
+    // GET /tareas/usuario/5
+    @Get('usuario/:usuarioId')
+    findByUsuario(@Param('usuarioId', ParseIntPipe) usuarioId: number) {
+        return this.tareaService.findByUsuario(usuarioId);
+    }
+
     @Post()
     createTareas(@Body()dto: CrearTareaDTO){
         return this.tareaService.create(dto);

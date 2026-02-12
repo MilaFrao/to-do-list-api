@@ -33,4 +33,9 @@ export class CrearTareaDTO {
   @IsInt()
   id_creador?: number;
 
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsInt()
+  id_usuario_asignado?: number;
+
 }
