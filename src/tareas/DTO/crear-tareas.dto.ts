@@ -1,36 +1,47 @@
-import { IsString, IsNotEmpty, MaxLength, IsOptional, IsInt, Min, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength, IsOptional, IsInt, Min, IsDateString, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
+
 
 
 export class CrearTareaDTO {
 
-  @IsNotEmpty()
   @IsInt()
   @Type(() => Number)
-  id?: number;
+  id!: number; // ID manual (decisión del equipo)
 
-  @IsNotEmpty()
   @IsString()
-  @MaxLength(150)
-  titulo?: string;
+  @IsNotEmpty()
+  titulo!: string;
 
   @IsOptional()
   @IsString()
   descripcion?: string;
 
   @IsOptional()
-  @Type(() => Number)
   @IsInt()
   @Min(0)
   story_points?: number;
 
   @IsOptional()
   @IsDateString()
-  fecha_entrega?: string; 
+  fecha_entrega?: string;
 
-  @Type(() => Number)
-  @IsNotEmpty()
   @IsInt()
-  id_creador?: number;
+  @Type(() => Number)
+  id_usuario_asignado!: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  categorias?: number[];
+  @IsInt()
+  @Type(() => Number)
+  id_usuario_asignado!: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  categorias?: number[];
 
 }
+

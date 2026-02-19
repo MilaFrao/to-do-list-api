@@ -1,4 +1,4 @@
--- Active: 1769915241478@@127.0.0.1@5432@todo_bd@public
+-- Active: 1770762832624@@127.0.0.1@5432@todo_bd
 
 CREATE TABLE usuarios(
     id integer NOT NULL,

@@ -1,20 +1,29 @@
-import { Controller, Body, Get, Post, Delete, Param, ParseIntPipe, Patch } from '@nestjs/common';
+import { Controller, Body, Get, Post, Delete, Param, ParseIntPipe, Patch, UseGuards, Query } from '@nestjs/common';
 import { TareasService } from './tareas.service';
 import { CrearTareaDTO } from './DTO/crear-tareas.dto';
 import { ActualizarTareaDTO } from './DTO/actualizar-tareas.dto';
+import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import type { Request } from 'express';
+import { Req } from '@nestjs/common';
 
+
+@UseGuards(JwtAuthGuard)
 @Controller('tareas')
 export class TareasController {
     constructor(private readonly tareaService:TareasService){}
-
     @Get()
-    getTareas(){
-        return this.tareaService.findAll();
+    getTareas(@Query('usuario') usuario?: number, @Query('estado') estado?: string,) {
+        return this.tareaService.findAll(usuario, estado);
+    }
+    
+    @Get(':id')
+    getDetalleTarea(@Param('id', ParseIntPipe)id: number){
+        return this.tareaService.findDetalle(id);
     }
 
     @Post()
-    createTareas(@Body()dto: CrearTareaDTO){
-        return this.tareaService.create(dto);
+    create(@Body()dto: CrearTareaDTO, @Req()req: any){
+        return this.tareaService.create(dto, req.user.id);
     }
 
     @Patch(':id')

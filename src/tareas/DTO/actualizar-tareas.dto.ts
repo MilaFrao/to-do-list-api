@@ -15,6 +15,4 @@ export class ActualizarTareaDTO
     @IsString()
     @MaxLength(30)
     estado?: string;
-
-
 }
