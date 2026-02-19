@@ -60,102 +60,6 @@ export class TareasService {
       categorias,
     };
   }
-  
-  async findAll(usuario?: number, estado?: string) {
-    let sql = `
-      SELECT DISTINCT t.id, t.titulo, t.descripcion, t.story_points,
-              t.fecha_entrega, t.estado, t.id_creador, t.fecha_creacion
-      FROM tareas t
-      LEFT JOIN tarea_asigna_usuario tau ON t.id = tau.id_tarea
-    `;
-  
-    const conditions: string[] = [];
-    const values: any[] = [];
-  
-    if (usuario) {
-      values.push(usuario);
-      conditions.push(`tau.id_usuario = $${values.length}`);
-    }
-  
-    if (estado) {
-      values.push(estado);
-      conditions.push(`t.estado = $${values.length}`);
-    }
-  
-    if (conditions.length > 0) {
-      sql += ' WHERE ' + conditions.join(' AND ');
-    }
-  
-    return this.db.query(sql, values);
-  }
-  
-  async create(dto: CrearTareaDTO, idCreador: number) {
-    const client = await this.db.getClient();
-
-    try {
-      await client.query('BEGIN');
-      const sqlTarea = `
-        INSERT INTO tareas (
-          id,
-          titulo,
-          descripcion,
-          story_points,
-          fecha_entrega,
-          id_creador
-        )
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *
-      `;
-
-      const tareaResult = await client.query(sqlTarea, [
-        dto.id,
-        dto.titulo,
-        dto.descripcion ?? null,
-        dto.story_points ?? null,
-        dto.fecha_entrega ?? null,
-        idCreador,
-      ]);
-
-      const tarea = tareaResult.rows[0];
-      const sqlAsignar = `
-        INSERT INTO tarea_asigna_usuario (id_tarea, id_usuario)
-        VALUES ($1, $2)
-      `;
-
-      await client.query(sqlAsignar, [
-        tarea.id,
-        dto.id_usuario_asignado,
-      ]);
-
-      if (dto.categorias?.length) {
-        const sqlCategoria = `
-          INSERT INTO tarea_posee_categoria (id_tarea, id_categoria)
-          VALUES ($1, $2)
-        `;
-
-        for (const idCategoria of dto.categorias) {
-          await client.query(sqlCategoria, [
-            tarea.id,
-            idCategoria,
-          ]);
-        }
-      }
-
-      await client.query('COMMIT');
-
-      return {
-        ...tarea,
-        usuario_asignado: dto.id_usuario_asignado,
-        categorias: dto.categorias ?? [],
-      };
-
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
-  }
 
   async findAll(usuario?: number, estado?: string) {
     let sql = `
@@ -250,16 +154,6 @@ export class TareasService {
       throw error;
     } finally {
       client.release();
-=======
-  async findAll() {
-    const sql = `
-      SELECT id, titulo, descripcion, story_points, fecha_entrega, estado, id_creador, fecha_creacion FROM tareas`;
-    try {
-      const rows = await this.db.query(sql);
-      return rows; // db.query devuelve array de rows
-    } catch (err) {
-      // log si tienes logger
-      throw new InternalServerErrorException('Error obteniendo tareas');
     }
   }
 
@@ -271,51 +165,6 @@ export class TareasService {
           WHERE tau.id_usuario = $1`;
       return this.db.query(sql, [idUsuario]);
   }
-
-
-  async create(dto: CrearTareaDTO) {
-    const client = await this.db.getClient();
-
-    try {
-        await client.query('BEGIN');
-
-        // Los datos para la tabla 'tareas'
-        const sqlTarea = `
-            INSERT INTO tareas (id, titulo, descripcion, story_points, fecha_entrega, id_creador)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *
-        `;
-        const resTarea = await client.query(sqlTarea, [
-            dto.id, 
-            dto.titulo, 
-            dto.descripcion, 
-            dto.story_points, 
-            dto.fecha_entrega, 
-            dto.id_creador
-        ]);
-
-        const nuevaTarea = resTarea.rows[0];
-
-        // El dato que "sobraba" en el DTO lo usamos aquí
-        const sqlRelacion = `
-            INSERT INTO tarea_asigna_usuario (id_tarea, id_usuario)
-            VALUES ($1, $2)
-        `;
-        await client.query(sqlRelacion, [nuevaTarea.id, dto.id_usuario_asignado]);
-
-        await client.query('COMMIT');
-        return { ...nuevaTarea, id_usuario_asignado: dto.id_usuario_asignado };
-
-    } catch (err) {
-        await client.query('ROLLBACK');
-        throw err;
-    } finally {
-        client.release();
->>>>>>> 865ca3bfd206b6f81c8e14f10d6e53ef8bfeb757
->>>>>>> 36a9e916d5825b57ad702bbcddecf6363d146620
-    }
-  }
-
 
   async update(id: number, dto: ActualizarTareaDTO){
     const sql = 'UPDATE tareas SET titulo = $1, descripcion = $2, estado = $3 WHERE id = $4 RETURNING *';

@@ -1,8 +1,6 @@
 import { IsString, IsNotEmpty, MaxLength, IsOptional, IsInt, Min, IsDateString, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
-
-
 export class CrearTareaDTO {
 
   @IsInt()
@@ -34,14 +32,5 @@ export class CrearTareaDTO {
   @IsArray()
   @IsInt({ each: true })
   categorias?: number[];
-  @IsInt()
-  @Type(() => Number)
-  id_usuario_asignado!: number;
-
-  @IsOptional()
-  @IsArray()
-  @IsInt({ each: true })
-  categorias?: number[];
 
 }
-
