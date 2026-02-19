@@ -7,6 +7,7 @@ import { ActualizarTareaDTO } from './DTO/actualizar-tareas.dto';
 export class TareasService {
   constructor(private readonly db: DbService) {}
 
+<<<<<<< HEAD
   async findDetalle(id: number) {
     const tareaSql = `
       SELECT id, titulo, descripcion, story_points,
@@ -155,6 +156,68 @@ export class TareasService {
       throw error;
     } finally {
       client.release();
+=======
+  async findAll() {
+    const sql = `
+      SELECT id, titulo, descripcion, story_points, fecha_entrega, estado, id_creador, fecha_creacion FROM tareas`;
+    try {
+      const rows = await this.db.query(sql);
+      return rows; // db.query devuelve array de rows
+    } catch (err) {
+      // log si tienes logger
+      throw new InternalServerErrorException('Error obteniendo tareas');
+    }
+  }
+
+  // tareas.service.ts
+  async findByUsuario(idUsuario: number) {
+      const sql = `
+          SELECT t.* FROM tareas t
+          INNER JOIN tarea_asigna_usuario tau ON t.id = tau.id_tarea
+          WHERE tau.id_usuario = $1`;
+      return this.db.query(sql, [idUsuario]);
+  }
+
+
+  async create(dto: CrearTareaDTO) {
+    const client = await this.db.getClient();
+
+    try {
+        await client.query('BEGIN');
+
+        // Los datos para la tabla 'tareas'
+        const sqlTarea = `
+            INSERT INTO tareas (id, titulo, descripcion, story_points, fecha_entrega, id_creador)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING *
+        `;
+        const resTarea = await client.query(sqlTarea, [
+            dto.id, 
+            dto.titulo, 
+            dto.descripcion, 
+            dto.story_points, 
+            dto.fecha_entrega, 
+            dto.id_creador
+        ]);
+
+        const nuevaTarea = resTarea.rows[0];
+
+        // El dato que "sobraba" en el DTO lo usamos aquí
+        const sqlRelacion = `
+            INSERT INTO tarea_asigna_usuario (id_tarea, id_usuario)
+            VALUES ($1, $2)
+        `;
+        await client.query(sqlRelacion, [nuevaTarea.id, dto.id_usuario_asignado]);
+
+        await client.query('COMMIT');
+        return { ...nuevaTarea, id_usuario_asignado: dto.id_usuario_asignado };
+
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+>>>>>>> 865ca3bfd206b6f81c8e14f10d6e53ef8bfeb757
     }
   }
 

@@ -30,9 +30,17 @@ export class CrearTareaDTO {
   @Type(() => Number)
   id_usuario_asignado!: number;
 
+<<<<<<< HEAD
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
   categorias?: number[];
+=======
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsInt()
+  id_usuario_asignado?: number;
+
+>>>>>>> 865ca3bfd206b6f81c8e14f10d6e53ef8bfeb757
 }
 
