@@ -14,6 +14,11 @@ export class TareasController {
     getTareas(@Query('usuario') usuario?: number, @Query('estado') estado?: string,) {
         return this.tareaService.findAll(usuario, estado);
     }
+
+    @Get('usuario/:id')
+    getTareasUsuario(@Param('id', ParseIntPipe) id: number){
+        return this.tareaService.findByUsuario(id);
+    }
     
     @Get(':id')
     getDetalleTarea(@Param('id', ParseIntPipe)id: number){
