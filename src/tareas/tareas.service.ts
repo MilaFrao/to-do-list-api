@@ -83,7 +83,7 @@ export class TareasService {
   async findAll(usuario?: number, estado?: string) {
     let sql = `
       SELECT DISTINCT t.id, t.titulo, t.descripcion, t.story_points,
-              t.fecha_entrega, t.estado, t.id_creador, t.fecha_creacion
+              t.fecha_entrega, t.estado, t.id_creador, t.fecha_creacion, tau.id_usuario as usuario_asignado
       FROM tareas t
       LEFT JOIN tarea_asigna_usuario tau ON t.id = tau.id_tarea
     `;
@@ -178,13 +178,16 @@ export class TareasService {
 
   // tareas.service.ts De momento no se utiliza
   async findByUsuario(idUsuario: number) {
-      const sql = `
-          SELECT t.* FROM tareas t
-          INNER JOIN tarea_asigna_usuario tau ON t.id = tau.id_tarea
-          WHERE tau.id_usuario = $1`;
-      return this.db.query(sql, [idUsuario]);
+    const sql = `
+      SELECT DISTINCT -- Esto evita que la tarea salga repetida
+        t.*, 
+        tau.id_usuario AS usuario_asignado 
+      FROM tareas t
+      LEFT JOIN tarea_asigna_usuario tau ON t.id = tau.id_tarea
+      WHERE tau.id_usuario = $1 OR t.id_creador = $1
+    `;
+    return this.db.query(sql, [idUsuario]);
   }
-
   async update(id: number, dto: ActualizarTareaDTO){
     const sql = 'UPDATE tareas SET titulo = $1, descripcion = $2, estado = $3 WHERE id = $4 RETURNING *';
 
