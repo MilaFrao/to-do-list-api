@@ -176,7 +176,7 @@ export class TareasService {
     }
   }
 
-  // tareas.service.ts
+  // tareas.service.ts De momento no se utiliza
   async findByUsuario(idUsuario: number) {
       const sql = `
           SELECT t.* FROM tareas t
@@ -184,7 +184,6 @@ export class TareasService {
           WHERE tau.id_usuario = $1`;
       return this.db.query(sql, [idUsuario]);
   }
-  
 
   async update(id: number, dto: ActualizarTareaDTO){
     const sql = 'UPDATE tareas SET titulo = $1, descripcion = $2, estado = $3 WHERE id = $4 RETURNING *';
