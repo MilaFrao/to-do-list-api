@@ -7,12 +7,31 @@ import { ActualizarTareaDTO } from './DTO/actualizar-tareas.dto';
 export class TareasService {
   constructor(private readonly db: DbService) {}
 
+  async findUnDetalle(idTarea: number){
+    const tareaSql = 'SELECT id, titulo, descripcion, story_points, fecha_entrega, estado, id_creador, fecha_creacion FROM tareas WHERE id = $1';
+    const tareas = await this.db.query(tareaSql, [idTarea]);
+
+    if(tareas.length === 0){
+      throw new NotFoundException('Tarea no encontrada');
+    }
+    const tarea = tareas[0];
+
+    const comentariosSql = 'SELECT c.id, c.contenido, c.fecha_comentario, u.id AS usuario_id, u.nombre AS usuario_nombre FROM comentarios c JOIN usuarios u ON u.id = c.id_usuario WHERE c.id_tarea = $1 ORDER BY c.fecha_comentario ASC';
+    const comentarios = await this.db.query(comentariosSql,[idTarea]);
+
+    const categoriasSql = 'SELECT cat.id, cat.nombre, cat.color FROM categorias cat JOIN tarea_posee_categoria tpc ON tpc.id_categoria = cat.id WHERE tpc.id_tarea = $1';
+    const categorias = await this.db.query(categoriasSql,[idTarea]);
+
+    return {
+      ...tarea,
+      comentarios,
+      categorias,
+    };
+  }
+
   async findDetalle(id: number) {
     const tareaSql = `
-      SELECT id, titulo, descripcion, story_points,
-              fecha_entrega, estado, id_creador, fecha_creacion
-      FROM tareas
-      WHERE id = $1
+      SELECT id, titulo, descripcion, story_points, fecha_entrega, estado, id_creador, fecha_creacion FROM tareas WHERE id = $1
     `;
   
     const tareas = await this.db.query(tareaSql, [id]);

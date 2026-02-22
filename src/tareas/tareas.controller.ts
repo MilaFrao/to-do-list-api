@@ -3,7 +3,6 @@ import { TareasService } from './tareas.service';
 import { CrearTareaDTO } from './DTO/crear-tareas.dto';
 import { ActualizarTareaDTO } from './DTO/actualizar-tareas.dto';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import type { Request } from 'express';
 import { Req } from '@nestjs/common';
 
 
