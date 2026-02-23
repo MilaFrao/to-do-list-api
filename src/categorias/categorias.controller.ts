@@ -23,7 +23,7 @@ export class CategoriasController {
     }
 
     @Delete(':id')
-    deleteCategorias(@Param('id')id: number, @Body()dto: ActualizarCategoriaDTO){
+    deleteCategorias(@Param('id')id: number){
         return this.categoriasService.delete(id);
     }
 

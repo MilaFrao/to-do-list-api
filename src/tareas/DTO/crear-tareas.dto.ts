@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, MaxLength, IsOptional, IsInt, Min, IsDateString, IsArray } from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength, IsOptional, IsInt, Min, IsDateString, IsArray, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CrearTareaDTO {
@@ -24,9 +24,10 @@ export class CrearTareaDTO {
   @IsDateString()
   fecha_entrega?: string;
 
-  @IsInt()
-  @Type(() => Number)
-  id_usuario_asignado!: number;
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  id_usuario_asignado: number[];
 
   @IsOptional()
   @IsArray()
