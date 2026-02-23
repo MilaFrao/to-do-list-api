@@ -34,4 +34,5 @@ export class ComentariosController {
     eliminarComentario(@Param('id') id: number){
         return this.comentarioService.delete(id);
     }
+
 }

@@ -121,6 +121,23 @@ export class TareasService {
 
     return this.db.query(sql, values);
   }
+
+  async findByUsuario(idUsuario: number) {
+    const sql = `
+      SELECT t.id, t.titulo, t.descripcion, t.story_points,
+              t.fecha_entrega, t.estado, t.id_creador, t.fecha_creacion,
+              (SELECT COALESCE(array_agg(tau2.id_usuario), ARRAY[]::integer[]) FROM tarea_asigna_usuario tau2 WHERE tau2.id_tarea = t.id) AS usuarios_asignados,
+              (SELECT COALESCE(json_agg(json_build_object('id', cat.id, 'nombre', cat.nombre, 'color', cat.color)), '[]'::json)
+              FROM tarea_posee_categoria tpc JOIN categorias cat ON cat.id = tpc.id_categoria
+              WHERE tpc.id_tarea = t.id) AS categorias
+      FROM tareas t
+      WHERE t.id_creador = $1 OR EXISTS (
+        SELECT 1 FROM tarea_asigna_usuario tau2 WHERE tau2.id_tarea = t.id AND tau2.id_usuario = $1
+      )
+    `;
+
+    return this.db.query(sql, [idUsuario]);
+  }
   
   async create(dto: CrearTareaDTO, idCreador: number) {
     const client = await this.db.getClient();
@@ -164,24 +181,6 @@ export class TareasService {
     } finally {
       client.release();
     }
-  }
-
-  // tareas.service.ts De momento no se utiliza
-  async findByUsuario(idUsuario: number) {
-    const sql = `
-      SELECT t.id, t.titulo, t.descripcion, t.story_points,
-              t.fecha_entrega, t.estado, t.id_creador, t.fecha_creacion,
-              (SELECT COALESCE(array_agg(tau2.id_usuario), ARRAY[]::integer[]) FROM tarea_asigna_usuario tau2 WHERE tau2.id_tarea = t.id) AS usuarios_asignados,
-              (SELECT COALESCE(json_agg(json_build_object('id', cat.id, 'nombre', cat.nombre, 'color', cat.color)), '[]'::json)
-              FROM tarea_posee_categoria tpc JOIN categorias cat ON cat.id = tpc.id_categoria
-              WHERE tpc.id_tarea = t.id) AS categorias
-      FROM tareas t
-      WHERE t.id_creador = $1 OR EXISTS (
-        SELECT 1 FROM tarea_asigna_usuario tau2 WHERE tau2.id_tarea = t.id AND tau2.id_usuario = $1
-      )
-    `;
-
-    return this.db.query(sql, [idUsuario]);
   }
 
   //Cristian: Update modificado para actualizar

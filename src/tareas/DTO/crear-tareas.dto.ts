@@ -27,7 +27,7 @@ export class CrearTareaDTO {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  id_usuario_asignado: number[];
+  id_usuario_asignado!: number[];
 
   @IsOptional()
   @IsArray()
