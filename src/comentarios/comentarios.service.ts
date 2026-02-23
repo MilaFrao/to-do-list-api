@@ -15,15 +15,16 @@ export class ComentariosService {
         }
 
     async create(dto: CrearComentarioDTO, idUsuario: number) {
-        const sql = 'INSERT INTO comentarios (contenido, id_usuario,id_tarea) VALUES ($1, $2, $3) RETURNING *';
+        const sql = 'INSERT INTO comentarios (id, contenido, id_tarea, id_usuario) VALUES ($1, $2, $3, $4) RETURNING *';
 
         try{
-            const result = await this.db.query(sql, [
+            const rows = await this.db.query(sql, [
+                dto.id,
                 dto.contenido,
-                idUsuario,
-                dto.id_tarea]);
+                dto.id_tarea,
+                idUsuario]);
 
-            return result.rows[0];
+            return rows[0];
         }catch(err: any){
             if(err.code === '23503'){
                 throw new BadRequestException('El usuario o la tarea no existe');
@@ -40,16 +41,19 @@ export class ComentariosService {
             RETURNING *
         `;
 
-        return this.db.query(sql, [
+        const rows = await this.db.query(sql, [
             dto.contenido,
             id
         ]);
+
+        return rows[0];
 
     }
 
     async delete(id: number){
         const sql = 'DELETE FROM comentarios WHERE id = $1 RETURNING *';
-        return this.db.query(sql, [id]);
+        const rows = await this.db.query(sql, [id]);
+        return rows[0];
     }
 
 }
