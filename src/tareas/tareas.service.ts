@@ -186,13 +186,14 @@ export class TareasService {
 
   //Cristian: Update modificado para actualizar
   // los datos básicos de la tarea, eliminar las categorías viejas y agregar las nuevas
+  // Además tambien elimina los usuarios asignados viejos y agregar los nuevos
   async update(id: number, dto: ActualizarTareaDTO) {
     const client = await this.db.getClient();
   
     try {
       await client.query('BEGIN');
   
-      // 1. Actualizamos la tarea (los campos básicos)
+      // 1. Actualizar datos básicos de la tarea
       const sqlTarea = `
         UPDATE tareas 
         SET titulo = $1, descripcion = $2, estado = $3 
@@ -206,26 +207,35 @@ export class TareasService {
         id
       ]);
   
-      // 2. Limpiamos y actualizamos las categorías en la tabla intermedia
+      // 2. Sincronizar CATEGORÍAS (Tabla: tarea_posee_categoria)
       await client.query('DELETE FROM tarea_posee_categoria WHERE id_tarea = $1', [id]);
-  
       if (dto.categorias && dto.categorias.length > 0) {
         const sqlCategorias = `
           INSERT INTO tarea_posee_categoria (id_tarea, id_categoria)
           SELECT $1, unnest($2::int[])`;
-        
         await client.query(sqlCategorias, [id, dto.categorias]);
+      }
+  
+      // 3. Sincronizar USUARIOS ASIGNADOS (Tabla: tarea_asigna_usuario)
+      // Borramos a quiénes estaba asignada antes
+      await client.query('DELETE FROM tarea_asigna_usuario WHERE id_tarea = $1', [id]);
+      
+      // Insertamos los nuevos usuarios asignados
+      if (dto.id_usuario_asignado && dto.id_usuario_asignado.length > 0) {
+        const sqlUsuarios = `
+          INSERT INTO tarea_asigna_usuario (id_tarea, id_usuario)
+          SELECT $1, unnest($2::int[])`;
+        await client.query(sqlUsuarios, [id, dto.id_usuario_asignado]);
       }
   
       await client.query('COMMIT');
   
-      // Construimos la respuesta final combinando los datos de la tarea con los del DTO
-      const tareaActualizada = {
-        ...resTarea.rows[0],       // Trae id, titulo, descripcion, estado, etc.
-        categorias: dto.categorias // Agregamos el array de IDs que acabamos de guardar
+      // 4. Construir respuesta para Postman
+      return {
+        ...resTarea.rows[0],
+        categorias: dto.categorias || [],
+        usuarios_asignados: dto.id_usuario_asignado || [] // Mostramos los nuevos usuarios asignados
       };
-  
-      return tareaActualizada; // Ahora Postman mostrará las categorías
   
     } catch (error) {
       await client.query('ROLLBACK');
