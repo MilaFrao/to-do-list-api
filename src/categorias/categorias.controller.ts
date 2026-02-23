@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Delete } from '@nestjs/common';
 import { CategoriasService } from './categorias.service';
 import { CrearCategoriaDTO } from './DTO/crear-categoria.dto';
 import { ActualizarCategoriaDTO } from './DTO/actualizar-categoria.dto';
@@ -20,6 +20,11 @@ export class CategoriasController {
     @Patch(':id')
     updateCategorias(@Param('id')id:number,@Body()dto:ActualizarCategoriaDTO){
         return this.categoriasService.update(id,dto);
+    }
+
+    @Delete(':id')
+    deleteCategorias(@Param('id')id: number, @Body()dto: ActualizarCategoriaDTO){
+        return this.categoriasService.delete(id);
     }
 
 }

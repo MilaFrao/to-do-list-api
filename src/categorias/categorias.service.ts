@@ -34,5 +34,10 @@ export class CategoriasService {
         ]);
     }
 
+    async delete(id: number){
+        const sql = 'DELETE FROM categorias WHERE id = $1 RETURNING *';
+        return this.db.query(sql, [id]);
+    }
+
 
 }
