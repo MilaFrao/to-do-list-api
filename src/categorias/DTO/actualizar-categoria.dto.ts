@@ -4,15 +4,15 @@ export class ActualizarCategoriaDTO {
     @IsNotEmpty()
     @IsString()
     @MaxLength(150)
-    nombre: string;
+    nombre?: string;
 
     @IsNotEmpty()
     @IsString()
     @MaxLength(300)
-    descripcion: string;
+    descripcion?: string;
 
     @IsNotEmpty()
     @IsString()
     @MaxLength(100)
-    color: string;
+    color?: string;
 }

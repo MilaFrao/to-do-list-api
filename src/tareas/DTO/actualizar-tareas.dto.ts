@@ -19,7 +19,7 @@ export class ActualizarTareaDTO
     @IsOptional()
     @IsArray()
     @IsNumber({}, { each: true })
-    id_usuario_asignado: number[];
+    id_usuario_asignado!: number[];
 
     @IsOptional()
     @IsArray()
